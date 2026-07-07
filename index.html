@@ -63,6 +63,18 @@
     </section>
 
     <section class="card">
+      <h2 class="section-title">Projects</h2>
+      <article class="project-item">
+        <h3 class="project-title">Function Frontier</h3>
+        <p class="project-desc">
+          A math function-based tower defense game. Type in formulas to draw curves and blast away little monsters! Challenge your limits in Endless Mode and climb your way up the leaderboards!
+        </p>
+        <button type="button" class="btn btn-game" id="gameStartBtn">🎮 GAME START</button>
+        <p id="gameFeedback" class="game-feedback"></p>
+      </article>
+    </section>
+
+    <section class="card">
       <h2 class="section-title">Education</h2>
       <div class="education-item">
         <img src="images/大同1.png" alt="Shanghai Datong High School logo" class="edu-logo">
@@ -100,7 +112,7 @@
         </li>
         <li>
           <span class="date-badge date-red">2025.11</span>
-          <span>大同中学 最佳干饭人</span>
+          <span>The Best Foodie at Datong High School</span>
         </li>
       </ul>
     </section>
@@ -176,6 +188,75 @@
       buildRows();
       window.addEventListener('resize', buildRows);
     })();
+  </script>
+  <div class="game-overlay" id="gameOverlay" aria-hidden="true">
+    <div class="overlay-bg"></div>
+    <div class="overlay-text" id="overlayText">Good Luck</div>
+    <div class="game-scene" id="gameScene">
+      <h2>Function Frontier</h2>
+      <p>Game scene ready. Replace this with your actual game canvas.</p>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var gameBtn = document.getElementById('gameStartBtn');
+      var gameFeedback = document.getElementById('gameFeedback');
+      var overlay = document.getElementById('gameOverlay');
+      var overlayText = document.getElementById('overlayText');
+      var gameScene = document.getElementById('gameScene');
+
+      if (!gameBtn) return;
+
+      // 涟漪效果
+      function createRipple(e) {
+        var btn = e.currentTarget;
+        var rect = btn.getBoundingClientRect();
+        var ripple = document.createElement('span');
+        ripple.className = 'ripple';
+        var size = Math.max(rect.width, rect.height);
+        ripple.style.width = ripple.style.height = size + 'px';
+        ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+        ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
+        btn.appendChild(ripple);
+        setTimeout(function () { ripple.remove(); }, 600);
+      }
+
+      gameBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        createRipple(e);
+
+        gameBtn.classList.add('is-started');
+        gameBtn.disabled = true;
+        if (gameFeedback) {
+          gameFeedback.textContent = 'Launching...';
+          gameFeedback.classList.add('is-visible');
+        }
+
+        // 触发全屏遮罩动画：圆形从中心极速扩展
+        overlay.classList.add('is-active');
+        document.body.style.overflow = 'hidden';
+
+        // "Good Luck" 文字淡入 + 缩放
+        setTimeout(function () {
+          overlayText.classList.add('is-visible');
+        }, 200);
+
+        // 文字淡出并放大，主游戏场景淡入
+        setTimeout(function () {
+          overlayText.classList.remove('is-visible');
+          overlayText.classList.add('is-fading');
+          gameScene.classList.add('is-visible');
+        }, 1400);
+
+        // 清理文字状态，完成无缝过渡
+        setTimeout(function () {
+          overlayText.classList.remove('is-fading');
+        }, 2200);
+
+        console.log('Function Frontier: game started');
+      });
+    });
   </script>
 </body>
 
