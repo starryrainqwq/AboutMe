@@ -206,17 +206,18 @@
     </div>
   </div>
 
-  <script>
+    <script>
     document.addEventListener('DOMContentLoaded', function () {
       var gameBtn = document.getElementById('gameStartBtn');
-      var gameFeedback = document.getElementById('gameFeedback');
       var overlay = document.getElementById('gameOverlay');
       var overlayText = document.getElementById('overlayText');
       var gameScene = document.getElementById('gameScene');
+      var loader = document.getElementById('redirectLoader');
+      var error = document.getElementById('redirectError');
+      var redirectStarted = false;
 
       if (!gameBtn) return;
 
-      // 涟漪效果
       function createRipple(e) {
         var btn = e.currentTarget;
         var rect = btn.getBoundingClientRect();
@@ -230,40 +231,60 @@
         setTimeout(function () { ripple.remove(); }, 600);
       }
 
+      function redirectToGame() {
+        if (redirectStarted) return;
+        redirectStarted = true;
+
+        var targetUrl = 'https://game.starryrain.top';
+        try {
+          window.location.replace(targetUrl);
+        } catch (err) {
+          try {
+            window.location.href = targetUrl;
+          } catch (err2) {
+            showError();
+          }
+        }
+      }
+
+      function showError() {
+        if (loader) loader.style.display = 'none';
+        if (error) error.style.display = 'flex';
+      }
+
       gameBtn.addEventListener('click', function (e) {
         e.preventDefault();
         createRipple(e);
 
         gameBtn.classList.add('is-started');
         gameBtn.disabled = true;
-        if (gameFeedback) {
-          gameFeedback.textContent = 'Launching...';
-          gameFeedback.classList.add('is-visible');
-        }
 
-        // 触发全屏遮罩动画：圆形从中心极速扩展
         overlay.classList.add('is-active');
         document.body.style.overflow = 'hidden';
 
-        // "Good Luck" 文字淡入 + 缩放
         setTimeout(function () {
           overlayText.classList.add('is-visible');
         }, 200);
 
-        // 文字淡出并放大，主游戏场景淡入
         setTimeout(function () {
           overlayText.classList.remove('is-visible');
           overlayText.classList.add('is-fading');
           gameScene.classList.add('is-visible');
         }, 1400);
 
-        // 清理文字状态，完成无缝过渡
         setTimeout(function () {
-          overlayText.classList.remove('is-fading');
+          if (loader) {
+            loader.querySelector('p').textContent = 'Redirecting to game.starryrain.top...';
+          }
+          redirectToGame();
         }, 2200);
-
-        console.log('Function Frontier: game started');
       });
+
+      setTimeout(function () {
+        if (redirectStarted && window.location.href.indexOf('game.starryrain.top') === -1) {
+          showError();
+        }
+      }, 6000);
     });
   </script>
 </body>
